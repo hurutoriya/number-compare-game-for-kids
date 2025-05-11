@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数の比較ゲーム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7; /* 明るい背景色 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        transition: background-color 0.5s ease; /* スムーズな色の変化 */
+        overflow: hidden; /* 絵文字が画面外に溢れないように */
+      }
+      .game-container {
+        width: 95%;
+        max-width: 800px; /* 最大幅を設定 */
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 1rem; /* 大きめの角丸 */
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* 強めの影 */
+        text-align: center;
+        transition: background-color 0.5s ease, box-shadow 0.3s ease; /* スムーズな変化 */
+        margin: 0 auto; /* 中央配置 */
+        position: relative; /* 絵文字の基準位置にする */
+      }
+      h1 {
+        font-family: 'Press Start 2P', cursive;
+        color: #4f46e5; /* ビビッドな紫色 */
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 0.25rem rgba(79, 70, 229, 0.5); /* 紫色の影 */
+      }
+      .number-display-container {
+        display: flex;
+        justify-content: space-between; /* 左右に配置 */
+        align-items: center; /* 中央揃え */
+        margin-bottom: 1.5rem;
+        width: 100%;
+      }
+
+      .number-display {
+        font-family: 'Noto Sans JP', sans-serif; /* 数字フォントを変更 */
+        font-size: 1.5rem; /* 大きめのフォント */
+        color: #1e293b; /* 濃いグレー */
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        background-color: #f0f0f0; /* 薄いグレーの背景 */
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05); /* 控えめな影 */
+        min-width: 4rem; /* 幅の最小値を設定 */
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .number-display:hover {
+        background-color: #e0e0e0;
+      }
+
+      .boxes-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        width: 100%;
+      }
+      .box {
+        width: 48%; /* ほぼ半分の幅 */
+        height: 14rem; /* 高さを1.4倍に設定 */
+        border: 0.25rem solid #6b7280; /* 少し太めの枠線 */
+        border-radius: 0.5rem;
+        background-color: #ffffff; /* 白背景 */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
+        overflow: hidden; /* ドットがはみ出さないように */
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05); /* 控えめな影 */
+        transition: border-color 0.3s ease; /* 枠線の色をアニメーション */
+        cursor: pointer; /* カーソルをポインターに変更 */
+      }
+      .box.highlighted {
+        border-color: #4f46e5; /* 強調する色 */
+        box-shadow: 0 0.5rem 1rem rgba(79, 70, 229, 0.3); /* 強めの影 */
+      }
+      .dot {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: #4f46e5; /* ドットの色 */
+        margin: 0.25rem; /* ドット間の間隔 */
+      }
+       .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            width: 100%; /* コンテナの幅を100%に設定 */
+        }
+
+      .reset-button, .check-button {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 0.8rem;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* スムーズな変化 */
+        width: 100%; /* ボタンの幅をコンテナに合わせる */
+        max-width: 300px; /* ボタンの最大幅を設定 */
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* 控えめな影 */
+      }
+      .reset-button {
+        background-color: #f59e0b; /* オレンジ色 */
+      }
+      .reset-button:hover {
+        background-color: #d97706; /* より濃いオレンジ */
+        transform: scale(1.05); /* 少し大きく */
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); /* 強めの影 */
+      }
+       .check-button {
+        background-color: #4f46e5; /* 紫色 */
+    }
+
+    .check-button:hover {
+        background-color: #4338ca; /* より濃い紫色 */
+        transform: scale(1.05);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+    }
+
+      #result {
+        font-size: 1.25rem;
+        font-family: 'Press Start 2P', cursive;
+        margin-top: 1.5rem;
+        color: #1e293b;
+        transition: color 0.3s ease;
+        text-align: center;
+        position: relative; /* 相対位置指定 */
+        z-index: 10;
+      }
+      .correct {
+        color: #16a34a; /* 緑色 */
+      }
+      .incorrect {
+        color: #dc2626; /* 赤色 */
+      }
+      .shake {
+        animation: shake 0.5s;
+      }
+      @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+      }
+      .emoji-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* 透明にしてクリックを透過 */
+        overflow: hidden;
+        z-index: 20;
+      }
+      .emoji {
+        position: absolute;
+        font-size: 2rem;
+        animation: confetti 1s linear infinite;
+        top: -10%;
+      }
+      @keyframes confetti {
+        to {
+          top: 110%;
+          transform: rotate(720deg);
+        }
+      }
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6rem;
+        z-index: 30;
+        pointer-events: none;
+        color: #dc2626;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .overlay.show {
+        opacity: 1;
+      }
+    </style>
+</head>
+<body class="bg-gradient-to-r from-purple-300 to-pink-300"> <div class="game-container bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-purple-600">数の比較ゲーム</h1>
+    <div class="number-display-container">
+      <div class="number-display" id="number-x">0</div>
+      <div class="number-display" id="number-y">0</div>
+    </div>
+    <div class="boxes-container">
+      <div class="box" id="box-x"></div>
+      <div class="box" id="box-y"></div>
+    </div>
+    <div class="button-container">
+        <button class="reset-button bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" id="reset-button">リセット</button>
+    </div>
+    <div id="result" class="mt-4 text-xl text-gray-800">どちらが大きいかな？</div>
+    <div class="emoji-container" id="emoji-container"></div>
+    <div class="overlay" id="overlay"></div>
+  </div>
+  <script>
+    const numberXDisplay = document.getElementById('number-x');
+    const numberYDisplay = document.getElementById('number-y');
+    const boxX = document.getElementById('box-x');
+    const boxY = document.getElementById('box-y');
+    const resetButton = document.getElementById('reset-button');
+    const resultDisplay = document.getElementById('result');
+    let numberX, numberY;
+    const kanjiNumbers = [
+      "", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう", "じゅう",
+      "じゅういち", "じゅうに", "じゅうさん", "じゅうよん", "じゅうご", "じゅうろく", "じゅうなな", "じゅうはち", "じゅうきゅう", "にじゅう",
+      "にじゅういち", "にじゅうに", "にじゅうさん", "じゅうよん", "じゅうご", "にじゅうろく", "にじゅうなな", "にじゅうはち", "にじゅうきゅう", "さんじゅう",
+      "さんじゅういち", "さんじゅうに", "さんじゅうさん", "さんじゅうよん", "さんじゅうご", "さんじゅうろく", "さんじゅうなな", "さんじゅうはち", "さんじゅうきゅう", "よんじゅう",
+      "よんじゅういち", "よんじゅうに", "よんじゅうさん", "よんじゅうよん", "よんじゅうご", "よんじゅうろく", "よんじゅうなな", "よんじゅうはち", "よんじゅうきゅう", "ごじゅう",
+      "ごじゅういち", "ごじゅうに", "ごじゅうさん", "ごじゅうよん", "ごじゅうご", "ごじゅうろく", "ごじゅうなな", "ごじゅうはち", "ごじゅうきゅう", "ろくじゅう",
+      "ろくじゅういち", "ろくじゅうに", "ろくじゅうさん", "ろくじゅうよん", "ろくじゅうご", "ろくじゅうろく", "ろくじゅうなな", "ろくじゅうはち", "ろくじゅうきゅう", "ななじゅう",
+      "ななじゅういち", "ななじゅうに", "ななじゅうさん", "ななじゅうよん", "ななじゅうご", "ななじゅうろく", "ななじゅうなな", "ななじゅうはち", "ななじゅうきゅう", "はちじゅう",
+      "はちじゅういち", "はちじゅうに", "はちじゅうさん", "はちじゅうよん", "はちじゅうご", "はちじゅうろく", "はちじゅうなな", "はちじゅうはち", "はちじゅうきゅう", "きゅうじゅう",
+      "きゅうじゅういち", "きゅうじゅうに", "きゅうじゅうさん", "きゅうじゅうよん", "きゅうじゅうご", "きゅうじゅうろく", "きゅうじゅうなな", "きゅうじゅうはち", "きゅうじゅうきゅう", "ひゃく"
+    ];
+    const correctSounds = [
+      "すごいね！",
+      "やったー！",
+      "そのとおり！",
+      "よくできたね！",
+      "さすが！",
+      "天才だね！"
+    ];
+    const incorrectSounds = [
+      "ざんねん！",
+      "もういちど！",
+      "ドンマイ！",
+      "ちがうよ！",
+      "がんばって！"
+    ];
+    function createDots(box, number) {
+      box.innerHTML = '';
+      const dotSize =  1;
+      const boxHeight =  '14rem';
+      box.style.height = boxHeight;
+      const padding = number > 50 ? '0.125rem' : '0.25rem';
+      for (let i = 0; i < number; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        dot.style.width = `${dotSize}rem`;
+        dot.style.height = `${dotSize}rem`;
+        dot.style.margin = padding;
+        box.appendChild(dot);
+      }
+    }
+    function generateNumbers() {
+      numberX = Math.floor(Math.random() * 100) + 1;
+      numberY = Math.floor(Math.random() * 100) + 1;
+      numberXDisplay.textContent = `${numberX}  :${kanjiNumbers[numberX]} `;
+      numberYDisplay.textContent = `${numberY}  :${kanjiNumbers[numberY]} `;
+      createDots(boxX, numberX);
+      createDots(boxY, numberY);
+      resultDisplay.textContent = 'どちらが大きいかな？';
+      resultDisplay.classList.remove('correct', 'incorrect');
+      boxX.classList.remove('highlighted');
+      boxY.classList.remove('highlighted');
+    }
+    function createConfetti() {
+      const container = document.getElementById('emoji-container');
+      for (let i = 0; i < 20; i++) {
+        const emoji = document.createElement('div');
+        emoji.classList.add('emoji');
+        emoji.textContent = '💮';
+        emoji.style.fontSize = '3rem';
+        emoji.style.left = `${Math.random() * 100}%`;
+        emoji.style.animationDuration = `${Math.random() * 0.7 + 1}s`;
+        container.appendChild(emoji);
+      }
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 2000);
+    }
+    function showIncorrectOverlay() {
+      const overlay = document.getElementById('overlay');
+      overlay.textContent = '✖';
+      overlay.classList.add('show');
+      setTimeout(() => {
+        overlay.classList.remove('show');
+      }, 1000);
+    }
+
+    function checkAnswer(clickedBox) {
+        let largerNumber;
+        if (numberX > numberY) {
+            largerNumber = 'box-x';
+        } else if (numberY > numberX) {
+            largerNumber = 'box-y';
+        } else {
+             largerNumber = 'equal';
+        }
+        if (clickedBox === largerNumber) {
+            resultDisplay.textContent = '正解！';
+            resultDisplay.classList.add('correct');
+            if (clickedBox === 'box-x') {
+                boxX.classList.add('highlighted');
+            } else {
+                boxY.classList.add('highlighted');
+            }
+            createConfetti();
+            const sound = correctSounds[Math.floor(Math.random() * correctSounds.length)];
+            const utterance = new SpeechSynthesisUtterance(sound);
+            utterance.lang = 'ja-JP';
+            speechSynthesis.speak(utterance);
+        } else if (largerNumber === 'equal'){
+            resultDisplay.textContent = '同じ数です！';
+            resultDisplay.classList.add('incorrect');
+            const sound = incorrectSounds[Math.floor(Math.random() * incorrectSounds.length)];
+            const utterance = new SpeechSynthesisUtterance(sound);
+            utterance.lang = 'ja-JP';
+            speechSynthesis.speak(utterance);
+        }
+        else {
+            resultDisplay.textContent = '不正解！';
+            resultDisplay.classList.add('incorrect');
+            if (clickedBox === 'box-x') {
+                 boxX.classList.add('highlighted', 'shake');
+            } else {
+                boxY.classList.add('highlighted', 'shake');
+            }
+            const sound = incorrectSounds[Math.floor(Math.random() * incorrectSounds.length)];
+            const utterance = new SpeechSynthesisUtterance(sound);
+            utterance.lang = 'ja-JP';
+            speechSynthesis.speak(utterance);
+            showIncorrectOverlay();
+            setTimeout(() => {
+                boxX.classList.remove('shake');
+                boxY.classList.remove('shake');
+            }, 500);
+        }
+    }
+    function speakNumber(number) {
+      const utterance = new SpeechSynthesisUtterance(kanjiNumbers[number]);
+      utterance.lang = 'ja-JP';
+      speechSynthesis.speak(utterance);
+    }
+    resetButton.addEventListener('click', generateNumbers);
+    boxX.addEventListener('click', () => checkAnswer('box-x'));
+    boxY.addEventListener('click', () => checkAnswer('box-y'));
+    numberXDisplay.addEventListener('click', () => speakNumber(numberX));
+    numberYDisplay.addEventListener('click', () => speakNumber(numberY));
+    generateNumbers();
+  </script>
+</body>
+</html>
