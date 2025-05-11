@@ -2,11 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数の比較ゲーム</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,26 +24,22 @@
         overflow: hidden;
       }
       .game-container {
-        width: 100%;
-        height: 100vh;
-        max-width: none;
+        width: 95%;
+        max-width: 800px;
         background-color: #fff;
-        padding: 0;
-        border-radius: 0;
-        box-shadow: none;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
         text-align: center;
         transition: background-color 0.5s ease, box-shadow 0.3s ease;
-        margin: 0;
+        margin: 0 auto;
         position: relative;
-        display: flex;
-        flex-direction: column;
       }
       h1 {
         font-family: 'Press Start 2P', cursive;
         color: #4f46e5;
         margin-bottom: 1rem;
         text-shadow: 0 0 0.25rem rgba(79, 70, 229, 0.5);
-        padding-top: 1rem;
       }
       .number-display-container {
         display: flex;
@@ -54,7 +47,6 @@
         align-items: center;
         margin-bottom: 1rem;
         width: 100%;
-        padding: 0 1rem;
       }
       .number-display {
         font-family: 'Noto Sans JP', sans-serif;
@@ -78,15 +70,12 @@
         justify-content: space-between;
         margin-bottom: 1rem;
         width: 100%;
-        height: calc(100vh - 14rem);
-        max-height: none;
-        padding: 0 1rem;
-        box-sizing: border-box;
+        height: calc(100vw - 14rem);
+        max-height: 36rem;
       }
       @media (min-width: 640px) {
         .boxes-container {
             height: 22rem;
-            max-height: 36rem;
         }
       }
       .box {
@@ -122,7 +111,6 @@
         gap: 1rem;
         margin-top: 0;
         width: 100%;
-        padding-bottom: 1rem;
       }
       .reset-button, .check-button {
         font-family: 'Press Start 2P', cursive;
@@ -223,12 +211,11 @@
       }
       @media (max-width: 768px) {
         .game-container {
-          padding: 0;
+          padding: 1rem;
         }
         h1 {
           font-size: 1.5rem;
           margin-bottom: 1rem;
-          padding-top: 1rem;
         }
         .number-display {
           font-size: 1.2rem;
@@ -236,7 +223,6 @@
         }
         .boxes-container {
           margin-bottom: 1rem;
-          padding: 0 1rem;
         }
         .reset-button, .check-button {
           font-size: 0.7rem;
@@ -420,16 +406,5 @@
     numberYDisplay.addEventListener('click', () => speakNumber(numberY));
     generateNumbers();
   </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(registration => {
-        console.log('Service Worker registered successfully:', registration);
-      })
-      .catch(error => {
-        console.error('Service Worker registration failed:', error);
-      });
-  }
-</script>
 </body>
 </html>
