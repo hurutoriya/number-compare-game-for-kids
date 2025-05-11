@@ -2,8 +2,11 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>数の比較ゲーム</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,99 +18,112 @@
         font-family: 'Inter', sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f7f7f7; /* 明るい背景色 */
+        background-color: #f7f7f7;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        transition: background-color 0.5s ease; /* スムーズな色の変化 */
-        overflow: hidden; /* 絵文字が画面外に溢れないように */
+        transition: background-color 0.5s ease;
+        overflow: hidden;
       }
       .game-container {
-        width: 95%;
-        max-width: 800px; /* 最大幅を設定 */
+        width: 100%;
+        height: 100vh;
+        max-width: none;
         background-color: #fff;
-        padding: 2rem;
-        border-radius: 1rem; /* 大きめの角丸 */
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* 強めの影 */
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
         text-align: center;
-        transition: background-color 0.5s ease, box-shadow 0.3s ease; /* スムーズな変化 */
-        margin: 0 auto; /* 中央配置 */
-        position: relative; /* 絵文字の基準位置にする */
+        transition: background-color 0.5s ease, box-shadow 0.3s ease;
+        margin: 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
       }
       h1 {
         font-family: 'Press Start 2P', cursive;
-        color: #4f46e5; /* ビビッドな紫色 */
-        margin-bottom: 1.5rem;
-        text-shadow: 0 0 0.25rem rgba(79, 70, 229, 0.5); /* 紫色の影 */
+        color: #4f46e5;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 0.25rem rgba(79, 70, 229, 0.5);
+        padding-top: 1rem;
       }
       .number-display-container {
         display: flex;
-        justify-content: space-between; /* 左右に配置 */
-        align-items: center; /* 中央揃え */
-        margin-bottom: 1.5rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
         width: 100%;
+        padding: 0 1rem;
       }
-
       .number-display {
-        font-family: 'Noto Sans JP', sans-serif; /* 数字フォントを変更 */
-        font-size: 1.5rem; /* 大きめのフォント */
-        color: #1e293b; /* 濃いグレー */
+        font-family: 'Noto Sans JP', sans-serif;
+        font-size: 1.5rem;
+        color: #1e293b;
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
-        background-color: #f0f0f0; /* 薄いグレーの背景 */
-        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05); /* 控えめな影 */
-        min-width: 4rem; /* 幅の最小値を設定 */
+        background-color: #f0f0f0;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+        min-width: 4rem;
         text-align: center;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        word-break: break-word;
       }
-
       .number-display:hover {
         background-color: #e0e0e0;
       }
-
       .boxes-container {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         width: 100%;
+        height: calc(100vh - 14rem);
+        max-height: none;
+        padding: 0 1rem;
+        box-sizing: border-box;
+      }
+      @media (min-width: 640px) {
+        .boxes-container {
+            height: 22rem;
+            max-height: 36rem;
+        }
       }
       .box {
-        width: 48%; /* ほぼ半分の幅 */
-        height: 14rem; /* 高さを1.4倍に設定 */
-        border: 0.25rem solid #6b7280; /* 少し太めの枠線 */
+        width: 48%;
+        height: 100%;
+        border: 0.25rem solid #6b7280;
         border-radius: 0.5rem;
-        background-color: #ffffff; /* 白背景 */
+        background-color: #ffffff;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         align-content: flex-start;
-        overflow: hidden; /* ドットがはみ出さないように */
-        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05); /* 控えめな影 */
-        transition: border-color 0.3s ease; /* 枠線の色をアニメーション */
-        cursor: pointer; /* カーソルをポインターに変更 */
+        overflow: hidden;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+        transition: border-color 0.3s ease;
+        cursor: pointer;
       }
       .box.highlighted {
-        border-color: #4f46e5; /* 強調する色 */
-        box-shadow: 0 0.5rem 1rem rgba(79, 70, 229, 0.3); /* 強めの影 */
+        border-color: #4f46e5;
+        box-shadow: 0 0.5rem 1rem rgba(79, 70, 229, 0.3);
       }
       .dot {
         width: 1rem;
         height: 1rem;
         border-radius: 50%;
-        background-color: #4f46e5; /* ドットの色 */
-        margin: 0.25rem; /* ドット間の間隔 */
+        background-color: #4f46e5;
+        margin: 0.25rem;
       }
-       .button-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 1rem;
-            width: 100%; /* コンテナの幅を100%に設定 */
-        }
-
+      .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0;
+        width: 100%;
+        padding-bottom: 1rem;
+      }
       .reset-button, .check-button {
         font-family: 'Press Start 2P', cursive;
         font-size: 0.8rem;
@@ -116,44 +132,42 @@
         border: none;
         border-radius: 0.5rem;
         cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* スムーズな変化 */
-        width: 100%; /* ボタンの幅をコンテナに合わせる */
-        max-width: 300px; /* ボタンの最大幅を設定 */
-        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* 控えめな影 */
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        width: 100%;
+        max-width: 300px;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
       }
       .reset-button {
-        background-color: #f59e0b; /* オレンジ色 */
+        background-color: #f59e0b;
       }
       .reset-button:hover {
-        background-color: #d97706; /* より濃いオレンジ */
-        transform: scale(1.05); /* 少し大きく */
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); /* 強めの影 */
-      }
-       .check-button {
-        background-color: #4f46e5; /* 紫色 */
-    }
-
-    .check-button:hover {
-        background-color: #4338ca; /* より濃い紫色 */
+        background-color: #d97706;
         transform: scale(1.05);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
-    }
-
+      }
+      .check-button {
+        background-color: #4f46e5;
+      }
+      .check-button:hover {
+        background-color: #4338ca;
+        transform: scale(1.05);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+      }
       #result {
         font-size: 1.25rem;
         font-family: 'Press Start 2P', cursive;
-        margin-top: 1.5rem;
+        margin-top: 1rem;
         color: #1e293b;
         transition: color 0.3s ease;
         text-align: center;
-        position: relative; /* 相対位置指定 */
+        position: relative;
         z-index: 10;
       }
       .correct {
-        color: #16a34a; /* 緑色 */
+        color: #16a34a;
       }
       .incorrect {
-        color: #dc2626; /* 赤色 */
+        color: #dc2626;
       }
       .shake {
         animation: shake 0.5s;
@@ -171,7 +185,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none; /* 透明にしてクリックを透過 */
+        pointer-events: none;
         overflow: hidden;
         z-index: 20;
       }
@@ -207,6 +221,35 @@
       .overlay.show {
         opacity: 1;
       }
+      @media (max-width: 768px) {
+        .game-container {
+          padding: 0;
+        }
+        h1 {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          padding-top: 1rem;
+        }
+        .number-display {
+          font-size: 1.2rem;
+          padding: 0.5rem;
+        }
+        .boxes-container {
+          margin-bottom: 1rem;
+          padding: 0 1rem;
+        }
+        .reset-button, .check-button {
+          font-size: 0.7rem;
+          padding: 0.5rem 1rem;
+        }
+        #result {
+          font-size: 1rem;
+          margin-top: 1rem;
+        }
+        .emoji {
+          font-size: 1.5rem;
+        }
+      }
     </style>
 </head>
 <body class="bg-gradient-to-r from-purple-300 to-pink-300"> <div class="game-container bg-white rounded-lg shadow-md">
@@ -237,7 +280,7 @@
     const kanjiNumbers = [
       "", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう", "じゅう",
       "じゅういち", "じゅうに", "じゅうさん", "じゅうよん", "じゅうご", "じゅうろく", "じゅうなな", "じゅうはち", "じゅうきゅう", "にじゅう",
-      "にじゅういち", "にじゅうに", "にじゅうさん", "じゅうよん", "じゅうご", "にじゅうろく", "にじゅうなな", "にじゅうはち", "にじゅうきゅう", "さんじゅう",
+      "にじゅういち", "にじゅうに", "にじゅうさん", "じゅうよん", "じゅうご", "にじゅうろく", "じゅうなな", "じゅうはち", "じゅうきゅう", "さんじゅう",
       "さんじゅういち", "さんじゅうに", "さんじゅうさん", "さんじゅうよん", "さんじゅうご", "さんじゅうろく", "さんじゅうなな", "さんじゅうはち", "さんじゅうきゅう", "よんじゅう",
       "よんじゅういち", "よんじゅうに", "よんじゅうさん", "よんじゅうよん", "よんじゅうご", "よんじゅうろく", "よんじゅうなな", "よんじゅうはち", "よんじゅうきゅう", "ごじゅう",
       "ごじゅういち", "ごじゅうに", "ごじゅうさん", "ごじゅうよん", "ごじゅうご", "ごじゅうろく", "ごじゅうなな", "ごじゅうはち", "ごじゅうきゅう", "ろくじゅう",
@@ -264,7 +307,7 @@
     function createDots(box, number) {
       box.innerHTML = '';
       const dotSize =  1;
-      const boxHeight =  '14rem';
+      const boxHeight =  '100%';
       box.style.height = boxHeight;
       const padding = number > 50 ? '0.125rem' : '0.25rem';
       for (let i = 0; i < number; i++) {
@@ -279,8 +322,12 @@
     function generateNumbers() {
       numberX = Math.floor(Math.random() * 100) + 1;
       numberY = Math.floor(Math.random() * 100) + 1;
-      numberXDisplay.textContent = `${numberX}  :${kanjiNumbers[numberX]} `;
-      numberYDisplay.textContent = `${numberY}  :${kanjiNumbers[numberY]} `;
+      const xText = numberX > 99 ? `${numberX}` : `${numberX}  :${kanjiNumbers[numberX]}`;
+      const yText = numberY > 99 ? `${numberY}` : `${numberY}  :${kanjiNumbers[numberY]}`;
+      numberXDisplay.textContent = xText;
+      numberYDisplay.textContent = yText;
+      numberXDisplay.style.fontSize = numberX > 76 ? '1rem' : '1.5rem';
+      numberYDisplay.style.fontSize = numberY > 76 ? '1rem' : '1.5rem';
       createDots(boxX, numberX);
       createDots(boxY, numberY);
       resultDisplay.textContent = 'どちらが大きいかな？';
@@ -373,5 +420,16 @@
     numberYDisplay.addEventListener('click', () => speakNumber(numberY));
     generateNumbers();
   </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(registration => {
+        console.log('Service Worker registered successfully:', registration);
+      })
+      .catch(error => {
+        console.error('Service Worker registration failed:', error);
+      });
+  }
+</script>
 </body>
 </html>
