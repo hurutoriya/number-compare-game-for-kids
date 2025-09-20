@@ -59,8 +59,12 @@
         min-width: 4rem;
         text-align: center;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease, font-size 0.3s ease;
         word-break: break-word;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .number-display:hover {
         background-color: #e0e0e0;
@@ -106,18 +110,12 @@
       }
       .button-container {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: center;
-        gap: 1rem;
+        gap: 1rem 2rem;
         margin-top: 1rem;
         width: 100%;
-      }
-      @media (min-width: 640px) {
-        .button-container {
-          flex-direction: row;
-          justify-content: center;
-          gap: 2rem;
-        }
       }
       .reset-button {
         font-family: 'Press Start 2P', cursive;
@@ -131,6 +129,12 @@
         min-width: 180px;
         box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
         background-color: #f59e0b;
+        order: -1; /* Make it appear first */
+      }
+       @media (min-width: 640px) {
+        .reset-button {
+            order: 0;
+        }
       }
       .reset-button:hover {
         background-color: #d97706;
@@ -268,6 +272,7 @@
         .number-display {
           font-size: 1.2rem;
           padding: 0.5rem;
+          min-height: 40px;
         }
         .boxes-container {
           margin-bottom: 1rem;
@@ -306,6 +311,13 @@
                 <span class="slider"></span>
             </label>
         </div>
+        <div class="toggle-wrapper">
+            <label for="toggle-reading" class="toggle-label">よみかた表示</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-reading" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
     </div>
     <div id="result" class="mt-4 text-xl text-gray-800">どちらが大きいかな？</div>
     <div class="emoji-container" id="emoji-container"></div>
@@ -319,6 +331,7 @@
     const resetButton = document.getElementById('reset-button');
     const resultDisplay = document.getElementById('result');
     const toggleDotsCheckbox = document.getElementById('toggle-dots');
+    const toggleReadingCheckbox = document.getElementById('toggle-reading');
     let numberX, numberY;
     const kanjiNumbers = [
       "", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう", "じゅう",
@@ -358,6 +371,19 @@
       }
     }
 
+    function updateNumberDisplay() {
+        const showReading = toggleReadingCheckbox.checked;
+        const xText = showReading ? `${numberX} : ${kanjiNumbers[numberX]}` : `${numberX}`;
+        const yText = showReading ? `${numberY} : ${kanjiNumbers[numberY]}` : `${numberY}`;
+        
+        numberXDisplay.textContent = xText;
+        numberYDisplay.textContent = yText;
+
+        const getFontSize = (num) => (showReading && kanjiNumbers[num]?.length > 8 ? '1rem' : '1.2rem');
+        numberXDisplay.style.fontSize = getFontSize(numberX);
+        numberYDisplay.style.fontSize = getFontSize(numberY);
+    }
+
     function generateNumbers() {
       numberX = Math.floor(Math.random() * 100) + 1;
       numberY = Math.floor(Math.random() * 100) + 1;
@@ -365,14 +391,7 @@
         numberY = Math.floor(Math.random() * 100) + 1;
       }
 
-      const xText = `${numberX} : ${kanjiNumbers[numberX]}`;
-      const yText = `${numberY} : ${kanjiNumbers[numberY]}`;
-      numberXDisplay.textContent = xText;
-      numberYDisplay.textContent = yText;
-
-      const getFontSize = (num) => (kanjiNumbers[num]?.length > 8 ? '1rem' : '1.2rem');
-      numberXDisplay.style.fontSize = getFontSize(numberX);
-      numberYDisplay.style.fontSize = getFontSize(numberY);
+      updateNumberDisplay();
       
       createDots(boxX, numberX);
       createDots(boxY, numberY);
@@ -455,11 +474,12 @@
     numberXDisplay.addEventListener('click', () => speakNumber(numberX));
     numberYDisplay.addEventListener('click', () => speakNumber(numberY));
     
-    // Event listener for the new toggle switch
     toggleDotsCheckbox.addEventListener('change', () => {
         createDots(boxX, numberX);
         createDots(boxY, numberY);
     });
+
+    toggleReadingCheckbox.addEventListener('change', updateNumberDisplay);
 
     generateNumbers();
   </script>
