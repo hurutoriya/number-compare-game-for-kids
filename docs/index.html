@@ -109,10 +109,17 @@
         flex-direction: column;
         align-items: center;
         gap: 1rem;
-        margin-top: 0;
+        margin-top: 1rem;
         width: 100%;
       }
-      .reset-button, .check-button {
+      @media (min-width: 640px) {
+        .button-container {
+          flex-direction: row;
+          justify-content: center;
+          gap: 2rem;
+        }
+      }
+      .reset-button {
         font-family: 'Press Start 2P', cursive;
         font-size: 0.8rem;
         color: white;
@@ -121,11 +128,8 @@
         border-radius: 0.5rem;
         cursor: pointer;
         transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        width: 100%;
-        max-width: 300px;
+        min-width: 180px;
         box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-      }
-      .reset-button {
         background-color: #f59e0b;
       }
       .reset-button:hover {
@@ -133,13 +137,56 @@
         transform: scale(1.05);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
       }
-      .check-button {
+      /* Toggle Switch Styles */
+      .toggle-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .toggle-label {
+        font-family: 'Noto Sans JP', sans-serif;
+        font-weight: 700;
+        color: #374151;
+        font-size: 0.9rem;
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 28px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
         background-color: #4f46e5;
       }
-      .check-button:hover {
-        background-color: #4338ca;
-        transform: scale(1.05);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+      input:checked + .slider:before {
+        transform: translateX(22px);
       }
       #result {
         font-size: 1.25rem;
@@ -150,6 +197,7 @@
         text-align: center;
         position: relative;
         z-index: 10;
+        min-height: 1.5rem;
       }
       .correct {
         color: #16a34a;
@@ -224,9 +272,10 @@
         .boxes-container {
           margin-bottom: 1rem;
         }
-        .reset-button, .check-button {
+        .reset-button {
           font-size: 0.7rem;
           padding: 0.5rem 1rem;
+          min-width: 140px;
         }
         #result {
           font-size: 1rem;
@@ -249,7 +298,14 @@
       <div class="box" id="box-y"></div>
     </div>
     <div class="button-container">
-        <button class="reset-button bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" id="reset-button">リセット</button>
+        <button class="reset-button" id="reset-button">リセット</button>
+        <div class="toggle-wrapper">
+            <label for="toggle-dots" class="toggle-label">たまの表示</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="toggle-dots" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
     </div>
     <div id="result" class="mt-4 text-xl text-gray-800">どちらが大きいかな？</div>
     <div class="emoji-container" id="emoji-container"></div>
@@ -262,6 +318,7 @@
     const boxY = document.getElementById('box-y');
     const resetButton = document.getElementById('reset-button');
     const resultDisplay = document.getElementById('result');
+    const toggleDotsCheckbox = document.getElementById('toggle-dots');
     let numberX, numberY;
     const kanjiNumbers = [
       "", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう", "じゅう",
@@ -276,26 +333,21 @@
       "きゅうじゅういち", "きゅうじゅうに", "きゅうじゅうさん", "きゅうじゅうよん", "きゅうじゅうご", "きゅうじゅうろく", "きゅうじゅうなな", "きゅうじゅうはち", "きゅうじゅうきゅう", "ひゃく"
     ];
     const correctSounds = [
-      "すごいね！",
-      "やったー！",
-      "そのとおり！",
-      "よくできたね！",
-      "さすが！",
-      "天才だね！"
+      "すごいね！", "やったー！", "そのとおり！", "よくできたね！", "さすが！", "天才だね！"
     ];
     const incorrectSounds = [
-      "ざんねん！",
-      "もういちど！",
-      "ドンマイ！",
-      "ちがうよ！",
-      "がんばって！"
+      "ざんねん！", "もういちど！", "ドンマイ！", "ちがうよ！", "がんばって！"
     ];
+
     function createDots(box, number) {
       box.innerHTML = '';
-      const dotSize =  0.66666666666;
-      const boxHeight =  '100%';
+      if (!toggleDotsCheckbox.checked) {
+        return; // If toggle is off, don't draw dots
+      }
+      const dotSize = 0.66666666666;
+      const boxHeight = '100%';
       box.style.height = boxHeight;
-      const padding = number > 50 ? '0.08333333333' : '0.16666666666';
+      const padding = number > 50 ? '0.08333333333rem' : '0.16666666666rem';
       for (let i = 0; i < number; i++) {
         const dot = document.createElement('div');
         dot.classList.add('dot');
@@ -305,24 +357,35 @@
         box.appendChild(dot);
       }
     }
+
     function generateNumbers() {
       numberX = Math.floor(Math.random() * 100) + 1;
       numberY = Math.floor(Math.random() * 100) + 1;
-      const xText = numberX > 99 ? `${numberX}` : `${numberX}  :${kanjiNumbers[numberX]}`;
-      const yText = numberY > 99 ? `${numberY}` : `${numberY}  :${kanjiNumbers[numberY]}`;
+      while (numberX === numberY) { // Ensure numbers are different
+        numberY = Math.floor(Math.random() * 100) + 1;
+      }
+
+      const xText = `${numberX} : ${kanjiNumbers[numberX]}`;
+      const yText = `${numberY} : ${kanjiNumbers[numberY]}`;
       numberXDisplay.textContent = xText;
       numberYDisplay.textContent = yText;
-      numberXDisplay.style.fontSize = numberX > 76 ? '1rem' : '1.5rem';
-      numberYDisplay.style.fontSize = numberY > 76 ? '1rem' : '1.5rem';
+
+      const getFontSize = (num) => (kanjiNumbers[num]?.length > 8 ? '1rem' : '1.2rem');
+      numberXDisplay.style.fontSize = getFontSize(numberX);
+      numberYDisplay.style.fontSize = getFontSize(numberY);
+      
       createDots(boxX, numberX);
       createDots(boxY, numberY);
+      
       resultDisplay.textContent = 'どちらが大きいかな？';
       resultDisplay.classList.remove('correct', 'incorrect');
-      boxX.classList.remove('highlighted');
-      boxY.classList.remove('highlighted');
+      boxX.classList.remove('highlighted', 'shake');
+      boxY.classList.remove('highlighted', 'shake');
     }
+
     function createConfetti() {
       const container = document.getElementById('emoji-container');
+      container.innerHTML = '';
       for (let i = 0; i < 20; i++) {
         const emoji = document.createElement('div');
         emoji.classList.add('emoji');
@@ -336,6 +399,7 @@
         container.innerHTML = '';
       }, 2000);
     }
+
     function showIncorrectOverlay() {
       const overlay = document.getElementById('overlay');
       overlay.textContent = '✖';
@@ -345,66 +409,60 @@
       }, 1000);
     }
 
-    function checkAnswer(clickedBox) {
-        let largerNumber;
-        if (numberX > numberY) {
-            largerNumber = 'box-x';
-        } else if (numberY > numberX) {
-            largerNumber = 'box-y';
-        } else {
-             largerNumber = 'equal';
+    function checkAnswer(clickedBoxId) {
+        // Prevent checking if an answer has already been given for the current numbers
+        if (resultDisplay.classList.contains('correct') || resultDisplay.classList.contains('incorrect')) {
+            return;
         }
-        if (clickedBox === largerNumber) {
+
+        const isXCorrect = numberX > numberY;
+        const isYCorrect = numberY > numberX;
+        const selectedBox = document.getElementById(clickedBoxId);
+
+        if ((clickedBoxId === 'box-x' && isXCorrect) || (clickedBoxId === 'box-y' && isYCorrect)) {
             resultDisplay.textContent = '正解！';
             resultDisplay.classList.add('correct');
-            if (clickedBox === 'box-x') {
-                boxX.classList.add('highlighted');
-            } else {
-                boxY.classList.add('highlighted');
-            }
+            selectedBox.classList.add('highlighted');
             createConfetti();
             const sound = correctSounds[Math.floor(Math.random() * correctSounds.length)];
             const utterance = new SpeechSynthesisUtterance(sound);
             utterance.lang = 'ja-JP';
             speechSynthesis.speak(utterance);
-        } else if (largerNumber === 'equal'){
-            resultDisplay.textContent = '同じ数です！';
-            resultDisplay.classList.add('incorrect');
-            const sound = incorrectSounds[Math.floor(Math.random() * incorrectSounds.length)];
-            const utterance = new SpeechSynthesisUtterance(sound);
-            utterance.lang = 'ja-JP';
-            speechSynthesis.speak(utterance);
-        }
-        else {
+        } else {
             resultDisplay.textContent = '不正解！';
             resultDisplay.classList.add('incorrect');
-            if (clickedBox === 'box-x') {
-                 boxX.classList.add('highlighted', 'shake');
-            } else {
-                boxY.classList.add('highlighted', 'shake');
-            }
+            selectedBox.classList.add('highlighted', 'shake');
+            showIncorrectOverlay();
             const sound = incorrectSounds[Math.floor(Math.random() * incorrectSounds.length)];
             const utterance = new SpeechSynthesisUtterance(sound);
             utterance.lang = 'ja-JP';
             speechSynthesis.speak(utterance);
-            showIncorrectOverlay();
             setTimeout(() => {
-                boxX.classList.remove('shake');
-                boxY.classList.remove('shake');
+                selectedBox.classList.remove('shake');
             }, 500);
         }
     }
+
     function speakNumber(number) {
-      const utterance = new SpeechSynthesisUtterance(kanjiNumbers[number]);
+      const utterance = new SpeechSynthesisUtterance(String(number));
       utterance.lang = 'ja-JP';
       speechSynthesis.speak(utterance);
     }
+
     resetButton.addEventListener('click', generateNumbers);
     boxX.addEventListener('click', () => checkAnswer('box-x'));
     boxY.addEventListener('click', () => checkAnswer('box-y'));
     numberXDisplay.addEventListener('click', () => speakNumber(numberX));
     numberYDisplay.addEventListener('click', () => speakNumber(numberY));
+    
+    // Event listener for the new toggle switch
+    toggleDotsCheckbox.addEventListener('change', () => {
+        createDots(boxX, numberX);
+        createDots(boxY, numberY);
+    });
+
     generateNumbers();
   </script>
 </body>
 </html>
+
